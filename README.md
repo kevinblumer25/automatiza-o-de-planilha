@@ -1,9 +1,9 @@
-# Projeto de Gera��o e Tratamento de Pedidos (CSV/Excel)
+# Projeto de Geração e Tratamento de Pedidos (CSV/Excel)
 
-Este reposit�rio cont�m scripts para gerar base fict�cia de pedidos e formatar/extrair planilhas com base em regras definidas.
+Este repositório contém scripts para gerar base fictícia de pedidos e formatar/extrair planilhas com base em regras definidas.
 
-- `gerandoarquivo.py`: gera dados sint�ticos de pedidos e exporta para Excel.
-- `main.py`: l� o Excel gerado, cria abas espec�ficas (PANELA e CASTRO), aplica filtros e formata visualmente (bordas, cabe�alho colorido, etc), salva resultado final.
+- `gerandoarquivo.py`: gera dados sintéticos de pedidos e exporta para Excel.
+- `main.py`: lá o Excel gerado, cria abas específicas (PANELA e CASTRO), aplica filtros e formata visualmente (bordas, cabeçalho colorido, etc), salva resultado final.
 
 ---
 
@@ -11,12 +11,12 @@ Este reposit�rio cont�m scripts para gerar base fict�cia de pedidos e form
 
 ### `gerandoarquivo.py`
 
-- Gera 1000 pedidos sint�ticos.
+- Gera 1000 pedidos sintéticos.
 - Colunas criadas:
-  - `Pedido ID`, `Griffe`, `G�nero` (imputado por sufixo em `Griffe`), `Linha`, `Refer�ncia`, `Descri��o`
-  - datas: `Data Emiss�o`, `Data Confirma��o`, `Data Original Entrega`, `Data Entrega Prevista`, `Data Entrega Real`
-  - valores: `Quantidade`, `Valor Unit�rio`, `Desconto`, `Valor Subtotal`, `Valor Total`
-  - metadados: `Status Pedido`, `Canal de Venda`, `Condi��o de Pagamento`, `Prioridade`, `Transportadora`, `Cliente`, `Documento Cliente`, `Observa��es`
+  - `Pedido ID`, `Griffe`, `Gênero` (imputado por sufixo em `Griffe`), `Linha`, `ReferÊncia`, `Descrição`
+  - datas: `Data Emissão`, `Data Confirmação`, `Data Original Entrega`, `Data Entrega Prevista`, `Data Entrega Real`
+  - valores: `Quantidade`, `Valor Unitário`, `Desconto`, `Valor Subtotal`, `Valor Total`
+  - metadados: `Status Pedido`, `Canal de Venda`, `Condição de Pagamento`, `Prioridade`, `Transportadora`, `Cliente`, `Documento Cliente`, `Observações`
   - `Dias Atraso` calculado
 - Cria somente a aba:
   - `Pedidos` (com todos os dados)
@@ -25,24 +25,24 @@ Este reposit�rio cont�m scripts para gerar base fict�cia de pedidos e form
 
 ### `main.py`
 
-- L� `pedidos_griffes_ficticias.xlsx`.
+- Lá `pedidos_griffes_ficticias.xlsx`.
 - Renomeia a aba principal de `Pedidos` para `PANELA`.
-- Remove colunas desnecess�rias.
+- Remove colunas desnecessárias.
 - Cria (ou substitui) abas:
-  - `PANELA`: filtro espec�fico `Tricot Fem` + `Underwear Masc` (a partir de `Griffe`)
+  - `PANELA`: filtro específico `Tricot Fem` + `Underwear Masc` (a partir de `Griffe`)
   - `CASTRO`: filtro por griffes/marca e linha
-- Aplica formata��o:
+- Aplica formatação:
   - tamanho de colunas ajustado
-  - bordas em todas as c�lulas (por aba)
-  - cabe�alho com preenchimento colorido
-  - filtros autom�ticos via `ws.auto_filter.ref`
-- Salva em `Carteira_Fict�cia.xlsx`.
+  - bordas em todas as células (por aba)
+  - cabeçalho com preenchimento colorido
+  - filtros automáticos via `ws.auto_filter.ref`
+- Salva em `Carteira_Fictícia.xlsx`.
 
 ---
 
 ##  Como executar
 
-1. Instale depend�ncias:
+1. Instale dependências:
    ```bash
    pip install pandas openpyxl xlsxwriter
    ```
@@ -57,29 +57,29 @@ Este reposit�rio cont�m scripts para gerar base fict�cia de pedidos e form
 
 ---
 
-##  Observa��es e peculiaridades
+##  Observações e peculiaridades
 
-- `xlsxwriter` n�o suporta modo append (`mode='a'`); no projeto usar `engine='openpyxl'` para esse caso.
-- Se a aba j� existe (nome igual), o script pode criar `PANELA1` quando h� conflito de nomes.
-- O filtro de borda/cores no cabe�alho deve usar `ws.max_row`/`ws.max_column` por planilha.
-- Caso precise `zero � esquerda`, use:
+- `xlsxwriter` não suporta modo append (`mode='a'`); no projeto usar `engine='openpyxl'` para esse caso.
+- Se a aba já existe (nome igual), o script pode criar `PANELA1` quando há conflito de nomes.
+- O filtro de borda/cores no cabeçalho deve usar `ws.max_row`/`ws.max_column` por planilha.
+- Caso precise `zero à esquerda`, use:
   - `df["Pedido ID"] = df["Pedido ID"].astype(str).str.zfill(4)` (no pandas)
   - ou `cell.number_format = "0000"` (openpyxl quando grava final).
 
 ---
 
-##  Estrutura de sa�da final
+##  Estrutura de saída final
 
 - `pedidos_griffes_ficticias.xlsx` (base gerada)
-- `Carteira_Fict�cia.xlsx` (arquivo final com aba PANELA e CASTRO + formata��o)
+- `Carteira_Fictícia.xlsx` (arquivo final com aba PANELA e CASTRO + formatação)
 
 ---
 
-##  Extens�es f�ceis
+##  Extensões fáceis
 
 - criar aba `Resumo Financeiro` (agrupamento por `Griffe`, `Status Pedido`, `Valor Total`)
 - exportar arquivos CSV separados por linha/griffe
-- adicionar valida��o de dados (PQ/SDC) antes de salvar
+- adicionar validação de dados (PQ/SDC) antes de salvar
 ---
 
 ##  Próximos passos
