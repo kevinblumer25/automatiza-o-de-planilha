@@ -1,88 +1,108 @@
-# Projeto de Geração e Tratamento de Pedidos (CSV/Excel)
+# Projeto de Geração e Tratamento de Pedidos (Excel)
 
-Este repositório contém scripts para gerar base fictícia de pedidos e formatar/extrair planilhas com base em regras definidas.
-
-- `gerandoarquivo.py`: gera dados sintéticos de pedidos e exporta para Excel.
-- `main.py`: lá o Excel gerado, cria abas específicas (PANELA e CASTRO), aplica filtros e formata visualmente (bordas, cabeçalho colorido, etc), salva resultado final.
+Automação de geração de dados fictícios de pedidos e processamento em abas específicas (PANELA e CASTRO) com formatação visual.
 
 ---
 
-##  Scripts
+## 📋 Arquivos do Projeto
 
 ### `gerandoarquivo.py`
+Gera base fictícia com 1000 pedidos e exporta para `pedidos_griffes_ficticias.xlsx`.
 
-- Gera 1000 pedidos sintéticos.
-- Colunas criadas:
-  - `Pedido ID`, `Griffe`, `Gênero` (imputado por sufixo em `Griffe`), `Linha`, `ReferÊncia`, `Descrição`
-  - datas: `Data Emissão`, `Data Confirmação`, `Data Original Entrega`, `Data Entrega Prevista`, `Data Entrega Real`
-  - valores: `Quantidade`, `Valor Unitário`, `Desconto`, `Valor Subtotal`, `Valor Total`
-  - metadados: `Status Pedido`, `Canal de Venda`, `Condição de Pagamento`, `Prioridade`, `Transportadora`, `Cliente`, `Documento Cliente`, `Observações`
-  - `Dias Atraso` calculado
-- Cria somente a aba:
-  - `Pedidos` (com todos os dados)
-- Usa `pandas` para gerar e gravar `.xlsx`.
-- Usa `openpyxl` ou `xlsxwriter` conforme disponibilidade.
+**Saída:**
+- Aba `Pedidos` contendo:
+  - `Pedido ID`, `Griffe`, `Linha`, `Referência`, `Descrição`
+  - Datas: `Data Emissão`, `Data Confirmação`, `Data Original Entrega`, `Data Entrega Prevista`, `Data Entrega Real`
+  - Valores: `Quantidade`, `Valor Unitário`, `Desconto`, `Valor Subtotal`, `Valor Total`
+  - Metadados: `Status Pedido`, `Canal de Venda`, `Condição de Pagamento`, `Prioridade`, `Transportadora`, `Cliente`, `Documento Cliente`, `Observações`
+  - `Dias Atraso` (calculado automaticamente)
 
 ### `main.py`
+Processa `pedidos_griffes_ficticias.xlsx` e gera `Carteira_Fictícia_{data}.xlsx`.
 
-- Lá `pedidos_griffes_ficticias.xlsx`.
-- Renomeia a aba principal de `Pedidos` para `PANELA`.
-- Remove colunas desnecessárias.
-- Cria (ou substitui) abas:
-  - `PANELA`: filtro específico `Tricot Fem` + `Underwear Masc` (a partir de `Griffe`)
-  - `CASTRO`: filtro por griffes/marca e linha
-- Aplica formatação:
-  - tamanho de colunas ajustado
-  - bordas em todas as células (por aba)
-  - cabeçalho com preenchimento colorido
-  - filtros automáticos via `ws.auto_filter.ref`
-- Salva em `Carteira_Fictícia.xlsx`.
+**Operações:**
+1. Renomeia aba `Pedidos` para `PANELA`
+2. Remove colunas: `Data Entrega Prevista`, `Data Entrega Real`, `Documento Cliente`, `Transportadora`, `Condição de Pagamento`
+3. Cria duas abas com filtros:
+   - **PANELA**: Griffes `Aura & Co`, `L'Éclat`, `Vanguardia` com linhas `Tricot Fem` + `Underwear Masc`
+   - **CASTRO**: Griffes `Aura & Co Fem`, `L'Éclat Fem` com linhas `Malha`, `Malha Black`, `Moletom`, `Underwear`
+4. Formatações aplicadas:
+   - Ajuste automático de largura de colunas
+   - Bordas em todas as células (estilo thin)
+   - Cabeçalho com preenchimento laranja (#FABF8F)
+   - Filtros automáticos ativados
+   - `Pedido ID` com formato de 6 dígitos com zeros à esquerda (`000000`)
 
----
+**Saída:** `Carteira_Fictícia_{dd.mm}.xlsx`
 
-##  Como executar
+### `rodar_planilha.bat` ⭐ (NOVO)
+Executável Windows para rodar `main.py` com um clique.
 
-1. Instale dependências:
-   ```bash
-   pip install pandas openpyxl xlsxwriter
-   ```
-2. Gerar dados:
-   ```bash
-   python gerandoarquivo.py
-   ```
-3. Processar e formatar:
-   ```bash
-   python main.py
-   ```
+**Funcionalidade:**
+- Duplo-clique para iniciar
+- Mensagem "Executando o script, aguarde..."
+- Exibe "Concluído com sucesso" ou "Erro na execução" ao final
+- Aguarda finalização completa (sem timeout)
+- Pressione qualquer tecla para fechar
 
 ---
 
-##  Observações e peculiaridades
+## ⚙️ Como Executar
 
-- `xlsxwriter` não suporta modo append (`mode='a'`); no projeto usar `engine='openpyxl'` para esse caso.
-- Se a aba já existe (nome igual), o script pode criar `PANELA1` quando há conflito de nomes.
-- O filtro de borda/cores no cabeçalho deve usar `ws.max_row`/`ws.max_column` por planilha.
-- Caso precise `zero à esquerda`, use:
-  - `df["Pedido ID"] = df["Pedido ID"].astype(str).str.zfill(4)` (no pandas)
-  - ou `cell.number_format = "0000"` (openpyxl quando grava final).
+### Opção 1: Via `.bat` (Recomendado - sem terminal)
+```
+Duplo-clique em: rodar_planilha.bat
+```
+
+### Opção 2: Via Python (terminal)
+```bash
+# Instalar dependências (primeira vez)
+pip install pandas openpyxl xlsxwriter
+
+# Gerar dados
+python gerandoarquivo.py
+
+# Processar e formatar
+python main.py
+```
 
 ---
 
-##  Estrutura de saída final
+## 📁 Fluxo de Execução
 
-- `pedidos_griffes_ficticias.xlsx` (base gerada)
-- `Carteira_Fictícia.xlsx` (arquivo final com aba PANELA e CASTRO + formatação)
+```
+gerandoarquivo.py
+    ↓
+pedidos_griffes_ficticias.xlsx (base com 1000 pedidos)
+    ↓
+main.py (lê, processa, formata)
+    ↓
+Carteira_Fictícia_{data}.xlsx (resultado final)
+```
 
 ---
 
-##  Extensões fáceis
+## 📝 Notas Técnicas
 
-- criar aba `Resumo Financeiro` (agrupamento por `Griffe`, `Status Pedido`, `Valor Total`)
-- exportar arquivos CSV separados por linha/griffe
-- adicionar validação de dados (PQ/SDC) antes de salvar
+- **Engine:** Por padrão usa `openpyxl` (suporta modo append)
+- **Formato de data:** `dd.mm` no nome do arquivo (ex: `Carteira_Fictícia_24.03.xlsx`)
+- **Dependências:** `pandas`, `openpyxl`, `xlsxwriter` (opcional)
+- **Python:** 3.7+
+
 ---
 
-##  Próximos passos
+## 📊 Estrutura de Saída
 
-- Trabalhando em uma interface gráfica (GUI) para tornar o uso mais atrativo e acessível para o usuário final. 
-- Principal foco: facilitar escolha de filtros, execução (botões) e visualização de resultados sem abrir código diretamente.
+| Arquivo | Conteúdo | Quando |
+|---------|----------|--------|
+| `pedidos_griffes_ficticias.xlsx` | Base bruta com 1000 pedidos, aba única `Pedidos` | Após `gerandoarquivo.py` |
+| `Carteira_Fictícia_{data}.xlsx` | Abas `PANELA` e `CASTRO` formatadas | Após `main.py` |
+
+---
+
+## 🔄 Próximas Melhorias
+
+- Interface gráfica (GUI) para facilitar uso final
+- Exportação em múltiplos formatos (CSV, PDF)
+- Dashboard interativo com resumos financeiros
+- Agrupamento por Griffe e Status Pedido

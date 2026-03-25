@@ -1,5 +1,11 @@
+import sys
+import traceback
+
 import pandas as pd 
 from openpyxl import load_workbook
+from datetime import datetime
+
+
 
 # Carregar o workbook
 wb = load_workbook("pedidos_griffes_ficticias.xlsx")
@@ -109,11 +115,12 @@ for ws in wb.worksheets:
             cell.fill = fill
 
 # Adicionando um (ou mais) 0 à esquerda
-
 for ws in wb.worksheets:
-    for row in ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=1, max_col=1):  # Supondo que o ID do pedido esteja na coluna A
+    for row in ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=1, max_col=1):
         for cell in row:
             if cell.value is not None:
-                cell.number_format = '000000'  # Formato para exibir 6 dígitos com zeros à esquerda
-wb.save('Carteira_Fictícia.xlsx')
+                cell.number_format = '000000'
+
+wb.save(f'Carteira_Fictícia_{datetime.now().strftime("%d.%m")}.xlsx')
+
 
