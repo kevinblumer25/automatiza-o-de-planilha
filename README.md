@@ -4,7 +4,7 @@ Automação de geração de dados fictícios de pedidos e processamento em abas 
 
 ---
 
-## 📋 Arquivos do Projeto
+## Arquivos do Projeto
 
 ### `gerandoarquivo.py`
 Gera base fictícia com 1000 pedidos e exporta para `pedidos_griffes_ficticias.xlsx`.
@@ -35,7 +35,7 @@ Processa `pedidos_griffes_ficticias.xlsx` e gera `Carteira_Fictícia_{data}.xlsx
 
 **Saída:** `Carteira_Fictícia_{dd.mm}.xlsx`
 
-### `rodar_planilha.bat` ⭐ (NOVO)
+### `rodar_planilha.bat`  (NOVO)
 Executável Windows para rodar `main.py` com um clique.
 
 **Funcionalidade:**
@@ -47,7 +47,7 @@ Executável Windows para rodar `main.py` com um clique.
 
 ---
 
-## ⚙️ Como Executar
+## Como Executar
 
 ### Opção 1: Via `.bat` (Recomendado - sem terminal)
 ```
@@ -68,7 +68,7 @@ python main.py
 
 ---
 
-## 📁 Fluxo de Execução
+## Fluxo de Execução
 
 ```
 gerandoarquivo.py
@@ -82,7 +82,7 @@ Carteira_Fictícia_{data}.xlsx (resultado final)
 
 ---
 
-## 📝 Notas Técnicas
+## Notas Técnicas
 
 - **Engine:** Por padrão usa `openpyxl` (suporta modo append)
 - **Formato de data:** `dd.mm` no nome do arquivo (ex: `Carteira_Fictícia_24.03.xlsx`)
@@ -91,7 +91,7 @@ Carteira_Fictícia_{data}.xlsx (resultado final)
 
 ---
 
-## 📊 Estrutura de Saída
+## Estrutura de Saída
 
 | Arquivo | Conteúdo | Quando |
 |---------|----------|--------|
@@ -100,7 +100,7 @@ Carteira_Fictícia_{data}.xlsx (resultado final)
 
 ---
 
-## 🔄 Próximas Melhorias
+## Próximas Melhorias
 
 - Interface gráfica (GUI) para facilitar uso final
 - Exportação em múltiplos formatos (CSV, PDF)
