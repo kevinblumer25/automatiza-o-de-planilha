@@ -1,0 +1,27 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Local logs and temporary files
+*.log
+*.tmp
+*.temp
+
+# Build and distribution artifacts
+build/
+dist/
+*.spec
+*.exe
+
+# Excel / local generated files
+*.xlsx
+*.xlsm
+*.xls
+
+dados.txt
