@@ -14,7 +14,7 @@ env/
 *.temp
 
 # Build and distribution artifacts
-*.vscode
+.vscode/
 build/
 dist/
 *.spec
