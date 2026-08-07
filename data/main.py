@@ -1,30 +1,105 @@
+from datetime import datetime
+import os
+import sys
+from pathlib import Path
+
+
+def get_app_dir():
+    if getattr(sys, "frozen", False):
+        exe_dir = os.path.dirname(os.path.abspath(sys.executable))
+        if exe_dir and os.path.isdir(exe_dir):
+            return exe_dir
+
+        if getattr(sys, "_MEIPASS", None):
+            meipass_dir = os.path.abspath(sys._MEIPASS)
+            if meipass_dir and os.path.isdir(meipass_dir):
+                return meipass_dir
+
+        return os.getcwd()
+
+    return os.path.dirname(os.path.abspath(__file__))
+
+
+def get_work_dir():
+    return Path(get_app_dir())
+
+
+app_dir = get_work_dir()
+app_dir.mkdir(parents=True, exist_ok=True)
+
+
+def find_input_workbook():
+    today = datetime.now().strftime('%d-%m-%y')
+    candidates = []
+
+    for base in [Path.cwd(), Path(app_dir), Path(__file__).resolve().parent, Path(get_app_dir())]:
+        candidates.append(base / f"Carteira_Fictícia_{today}.xlsx")
+        candidates.append(base / "Carteira_Fictícia.xlsx")
+        candidates.append(base / "pedidos_griffes_ficticias.xlsx")
+
+    for pattern in ["Carteira_Fictícia*.xlsx", "Carteira*.xlsx", "pedidos_griffes_ficticias.xlsx"]:
+        for base in [Path.cwd(), Path(app_dir), Path(__file__).resolve().parent, Path(get_app_dir())]:
+            candidates.extend(base.glob(pattern))
+
+    seen = set()
+    results = []
+    for path in candidates:
+        if not path.exists():
+            continue
+        if path in seen:
+            continue
+        seen.add(path)
+        results.append(path)
+
+    if not results:
+        return None
+
+    return max(results, key=lambda p: p.stat().st_mtime)
+
+
+def get_file_path(filename):
+    workbook = find_input_workbook()
+    if workbook is not None:
+        return str(workbook)
+
+    return os.path.join(app_dir, filename)
+
+
 def main():
-    import pandas as pd 
+    import pandas as pd
     from openpyxl import load_workbook
-    from datetime import datetime
+
+    workbook_path = get_file_path("pedidos_griffes_ficticias.xlsx")
 
     # Carregar o workbook
-    wb = load_workbook("pedidos_griffes_ficticias.xlsx")
+    wb = load_workbook(workbook_path)
 
-    # Trocar nome da planilha
-    ws = wb['Pedidos']
-    ws.title = "PANELA"
-    wb.save("pedidos_griffes_ficticias.xlsx")
+    # Aceitar tanto a aba original "Pedidos" quanto a aba já existente "PANELA"
+    if 'Pedidos' in wb.sheetnames:
+        ws = wb['Pedidos']
+    elif 'PANELA' in wb.sheetnames:
+        ws = wb['PANELA']
+    else:
+        ws = wb.active
 
-    
+    if ws.title != 'PANELA':
+        ws.title = 'PANELA'
+
+    wb.save(workbook_path)
+
     # importar o arquivo Excel
-    df = pd.read_excel("pedidos_griffes_ficticias.xlsx")
+    df = pd.read_excel(workbook_path)
 
     # Excluindo colunas
     colunas = ['Data Entrega Prevista', 'Data Entrega Real', 'Documento Cliente', 'Transportadora', 'Condição de Pagamento']
     df = df.drop(columns=colunas)
 
     # Alterando o nome das planilhas (usa openpyxl, pois xlsxwriter não aceita modo append)
-    with pd.ExcelWriter("pedidos_griffes_ficticias.xlsx", engine='openpyxl', mode='a', if_sheet_exists='replace') as writer:
+    with pd.ExcelWriter(workbook_path, engine='openpyxl', mode='a', if_sheet_exists='replace') as writer:
         df.to_excel(writer, sheet_name='PANELA', index=False)
         df.to_excel(writer, sheet_name='CASTRO', index=False)
     
-    df_novo = pd.read_excel("pedidos_griffes_ficticias.xlsx", sheet_name=['PANELA', 'CASTRO'])
+    df_novo = pd.read_excel(workbook_path, sheet_name=['PANELA', 'CASTRO'])
 
     df_panela = df_novo['PANELA']
     df_castro = df_novo['CASTRO']
@@ -47,7 +122,7 @@ def main():
     linhas_castro = ['Malha', 'Malha Black', 'Moletom', 'Underwear']
     df_castro = df_castro[df_castro['Griffe'].isin(griffes_castro) & df_castro['Linha'].isin(linhas_castro)]
 
-    with pd.ExcelWriter("pedidos_griffes_ficticias.xlsx", engine='openpyxl', mode='a', if_sheet_exists='replace') as writer:
+    with pd.ExcelWriter(workbook_path, engine='openpyxl', mode='a', if_sheet_exists='replace') as writer:
         df_panela.to_excel(writer, sheet_name='PANELA', index=False)
         df_castro.to_excel(writer, sheet_name='CASTRO', index=False)
 
@@ -55,7 +130,7 @@ def main():
     from openpyxl.utils import get_column_letter
 
 
-    wb = load_workbook('pedidos_griffes_ficticias.xlsx')
+    wb = load_workbook(workbook_path)
     ws = wb.active
 
     # Filtros automáticos
@@ -117,5 +192,8 @@ def main():
                 if cell.value is not None:
                     cell.number_format = '000000'
 
-    wb.save(f'Carteira_Fictícia_{datetime.now().strftime("%d.%m")}.xlsx')
+    output_path = os.path.join(app_dir, f'Carteira_Fictícia_{datetime.now().strftime("%d.%m")}.xlsx')
+    wb.save(output_path)
 
+if __name__ == "__main__":
+    main()
