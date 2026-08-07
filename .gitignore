@@ -18,7 +18,6 @@ env/
 build/
 dist/
 *.spec
-*.exe
 
 # Excel / local generated files
 *.xlsx
